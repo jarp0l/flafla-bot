@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #top
+import os
 import discord # For discord
 from discord.ext import commands # For commands
 from pathlib import Path # For paths
@@ -28,13 +29,20 @@ NOTE:
    -> Moderation: -check, -agree
    -> Extra: -hi, -echo'''
 
+
 #Defining a few things
 secret_file = json.load(open(cwd+'/bot_config/secrets.json'))
 bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_ids=set(secret_file['OWNER_IDS']), description=description, dm_help=True, sort_commands=False)
-bot.config_token = secret_file['token']
+# bot.config_token = secret_file['token']
 logging.basicConfig(level=logging.INFO) #shows logging info on the console
 
-DB_URI = secret_file['1']   #1 means active, 0 means inactive; go to secrets.json to change the mode
+# DB_URI = secret_file['1']   #1 means active, 0 means inactive; go to secrets.json to change the mode
+
+#from Heroku config vars:
+DB_URI = os.getenv('DATABASE_URL')
+bot.config_token = os.getenv('TOKEN')
+
+
 
 #some other constants used throughout the code:
 MOD_CHANNEL = secret_file['MOD_CHANNEL']
