@@ -111,7 +111,7 @@ async def on_ready():
 async def on_member_join(member):
 
     embed = discord.Embed(title="Welcome!!!", description=f'''
-    Hey {member.name.mention}, we all would like to warmly welcome you to our server: **{member.guild}**\n
+    Hey {member.name}, we all would like to warmly welcome you to our server: **{member.guild}**\n
     Some channels to visit in this server:
      \\***#welcome:** *know the reason behind creating this server*
      \\***#rules: ** *rules you **must** follow everywhere on this server*
