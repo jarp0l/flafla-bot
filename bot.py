@@ -32,7 +32,7 @@ NOTE:
 
 #Defining a few things
 secret_file = json.load(open(cwd+'/bot_config/secrets.json'))
-bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_ids=set(secret_file['OWNER_IDS']), description=description, dm_help=True, sort_commands=False)
+bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_ids=set(secret_file['OWNER_IDS']), description=description, dm_help=None, dm_help_threshold=500, sort_commands=False)
 # bot.config_token = secret_file['token']
 logging.basicConfig(level=logging.INFO) #shows logging info on the console
 
