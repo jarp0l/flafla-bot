@@ -462,7 +462,7 @@ async def _agree(ctx, rollnum_nickname, description=" This is to ensure that the
                 added_on,
                 message_id
             )
-            VALUES ( $1. $2 , $3, $4)
+            VALUES ( $1, $2 , $3, $4)
             ''',
                 ctx.author.id,
                 rollnum_nickname, 
