@@ -466,7 +466,8 @@ async def _agree(ctx, rollnum_nickname, description=" This is to ensure that the
             ''',
                 ctx.author.id,
                 rollnum_nickname, 
-                datetime.now(NPT).replace(microsecond=0, tzinfo=None)
+                datetime.now(NPT).replace(microsecond=0, tzinfo=None),
+                ctx.message.id
             )
     await conn.close()
     # await ctx.channel.send(f"Hey {ctx.author.mention}, you now have been given the role {role.mention}, and take a look at your nickname, it has been changed to __**{rollnum_nickname}**__ in this server!")
