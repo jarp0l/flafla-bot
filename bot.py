@@ -126,7 +126,7 @@ async def on_member_join(member):
 
     For other help commands, just send our bot the command: `-help` 
 
-    FROM:
+    From:
         ''', color=choice(bot.color_list))
 
     # embed.set_thumbnail(url=ctx.author.avatar_url)
@@ -348,7 +348,7 @@ async def submit_flag(ctx, challenge_id, flag):
         await ctx.channel.send(f"Wow! Your flag is correct!")
         
         channel = bot.get_channel(CHALLENGE_SOLVES_CHANNEL) #to send the below message to this channel
-        await channel.send(f"Hey @everyone, {ctx.author.mention} just solved the challenge with id: {challenge_id}!")
+        await channel.send(f"{ctx.author.mention} just solved the challenge with id: {challenge_id}!")
 
     else:
         await ctx.channel.send("That was incorrect. Do try again.")
@@ -407,7 +407,7 @@ async def publish_chal(ctx, challenge_id, description="Publish the challenge you
         await conn.close()
 
         if data is None:
-            await ctx.channel.send("The challenge with that id doesn't exist.")
+            await ctx.channel.send("There is no challenge with that id.")
 
         elif int(data['author_id']) != int(ctx.author.id):
             await ctx.channel.send("Why are you trying to publish someone else's challenge?")
