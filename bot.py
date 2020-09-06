@@ -105,6 +105,8 @@ async def on_ready():
     print(f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: -\n-----")
 
     await bot.change_presence(activity=discord.Game(name=f"Hi, I am {bot.user.name}.\nUse prefix `-` to interact with me. For example: `-help`.")) # This changes the bot's 'activity' that is see on profile pop-up
+    channel = bot.get_channel(751451619756867727)
+    await channel.send("Hey all, I'm back online! :smiley:")
 
 #on_member_join
 @bot.event 
