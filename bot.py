@@ -474,7 +474,7 @@ async def _agree(ctx, rollnum_nickname, description=" This is to ensure that the
     await conn.close()
     # await ctx.channel.send(f"Hey {ctx.author.mention}, you now have been given the role {role.mention}, and take a look at your nickname, it has been changed to __**{rollnum_nickname}**__ in this server!")
     await ctx.message.add_reaction('✅')
-    await ctx.channel.send(f"Congratulations {ctx.author.mention}, you have been added to the database and your nickname has been changed! Now you can add challenges as well as submit flags!")
+    await ctx.channel.send(f"Congratulations {ctx.author.mention}, you have been added to the database and your nickname has been changed! Now you can add challenges as well as submit flags!\nThis is what I added: {rollnum_nickname}")
 
 
 
@@ -514,7 +514,7 @@ async def check(ctx, rollnum_nickname, description="This is to ensure that all t
 
     # await ctx.channel.send(f"Hey {ctx.author.mention}, you now have been given the role {role.mention}.")
     await ctx.message.add_reaction('✅')
-    await ctx.channel.send(f"Congratulations {ctx.author.mention}, you have been added to the database! Now you can add challenges as well as submit flags!")
+    await ctx.channel.send(f"Congratulations {ctx.author.mention}, you have been added to the database! Now you can add challenges as well as submit flags!\nThis is what I added: {rollnum_nickname}")
 
 
 
