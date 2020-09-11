@@ -17,18 +17,24 @@ cwd = Path(__file__).parents[0]
 cwd = str(cwd)
 # print(f"{cwd}\n-----")
 
-description = '''Flafla - the bot for adding CTF challenges with their flags and for veryfing whether the submitted flag is correct.
-    
+description = '''Flafla - our own bot that helps us with our CTF challenges.
+
+TIPS: 
+* DM our bot: `-help` for more commands than shown below.
+
+* Many commands have aliases, delve deeper to find out!
+
+--------------------------------------------
+
 NOTE: 
-*`-help` command shows more commands on DM.
-
-* When you delve deeper into a command, for example `-help add challenge`, there will be a line including: `[description= ...`  just ignore the remaining part starting from `[des..`
-
 * Commands under different categories:
    -> Challenges: -add, -add challenge, -add flag, -publish
-   -> Moderation: -check, -agree
-   -> Extra: -hi, -echo'''
+   -> Moderation: -check-in, -agree
+   -> Extra: -hi, -echo
 
+---------------------------------------------
+
+'''
 
 #Defining a few things
 secret_file = json.load(open(cwd+'/bot_config/secrets.json'))
@@ -192,7 +198,7 @@ async def _add(ctx):
     """
     Add challenge or flag.
 
-    Add a CTF challenge and its flag.
+    Add a CTF challenge and a flag for it.
     """
     # if ctx.channel.id != ADD_CHALLENGES_CHANNEL:    #id of bot-test channel in CTF
     #     return
@@ -203,9 +209,11 @@ async def _add(ctx):
 #add_challenge
 #challenge
 @_add.command(name='challenge', aliases=['chal'])
-async def add_challenge(ctx, category, *, description="Add a CTF challenge by sending the challenge in the given format."):
+async def add_challenge(ctx, category, *, description):
     '''
     Add a challenge.
+
+    Add a CTF challenge by sending the challenge in the given format.
     '''
     if ctx.channel.id != ADD_CHALLENGES_CHANNEL:    #id of bot-test channel in CTF
         return
@@ -251,9 +259,11 @@ async def add_challenge(ctx, category, *, description="Add a CTF challenge by se
 #flag
 @_add.command(name='flag')
 @commands.dm_only()
-async def add_flag(ctx, challenge_id, flag, description="Add flag to the challenge added using -add challenge."):
+async def add_flag(ctx, challenge_id, flag):
     '''
     Add flag for the challenge you added.
+
+    Add flag for the challenge you added using -add challenge command.
     '''
     # try:
     challenge_id = int(challenge_id)
@@ -293,7 +303,7 @@ async def add_flag(ctx, challenge_id, flag, description="Add flag to the challen
         await ctx.channel.send("There is no challenge with that id.")
 
     else:
-        await ctx.channel.send("You didn't add the challenge, so you can't add the flag as well.")
+        await ctx.channel.send("Don't try to add flag to someone else's challenge!")
 
     # except Exception as e:
     #     # await ctx.channel.send("Please follow the correct syntax.")
@@ -307,12 +317,14 @@ async def add_flag(ctx, challenge_id, flag, description="Add flag to the challen
 #--------------------------------------------------------------
 
 #submit
-@bot.command(name='flag', aliases=['submit', 'submit-flag'], invoke_without_command=True, description="Submit flag to check whether it is correct or not.")
+@bot.command(name='flag', aliases=['submit', 'submit-flag'], invoke_without_command=True)
 @commands.dm_only()
 @commands.cooldown(rate=1, per=60, type=commands.BucketType.user)
 async def submit_flag(ctx, challenge_id, flag):
     '''
     Submit the captured flag!
+
+    Submit flag to check whether it is correct or not.
     '''
     # try:  
     challenge_id = int(challenge_id)
@@ -391,9 +403,11 @@ async def submit_flag(ctx, challenge_id, flag):
 
 #publish
 @bot.command(name='publish')
-async def publish_chal(ctx, challenge_id, description="Publish the challenge you added. You need to provide valid id of the challenge(s) 'you' added using thr given format."):
+async def publish_chal(ctx, challenge_id):
     '''
     Publish challenge after adding one.
+
+    You need to provide valid id of the challenge(s) you added using the given format.
     '''
     if ctx.channel.id != ADD_CHALLENGES_CHANNEL:
         return
@@ -446,9 +460,11 @@ async def publish_chal(ctx, challenge_id, description="Publish the challenge you
 #moderation
 #agree
 @bot.command(name='agree', aliases=['accept', 'register'])
-async def _agree(ctx, rollnum_nickname, description=" This is to ensure that the person(author) agrees to abide by the rules and also to add them to the database. After the author gives rollnum_nick, their nickname will be changed to the given rollnum_nick form."):
+async def _agree(ctx, rollnum_nickname):
     """
     For new-comers to the server. Type `-help agree` for more info.
+
+    This is to ensure that the person(who issues the command, i.e. author) agrees to abide by the rules and also to add them to the database. After the author gives rollnum_nick, their nickname will be changed to the given rollnum_nick form.
     """
     if ctx.channel.id != NEW_MEMBERS_CHANNEL: #new-arrivals channel
         return
@@ -478,7 +494,7 @@ async def _agree(ctx, rollnum_nickname, description=" This is to ensure that the
     await conn.close()
     # await ctx.channel.send(f"Hey {ctx.author.mention}, you now have been given the role {role.mention}, and take a look at your nickname, it has been changed to __**{rollnum_nickname}**__ in this server!")
     await ctx.message.add_reaction('✅')
-    await ctx.channel.send(f"Congratulations {ctx.author.mention}, you have been added to the database and your nickname has been changed! Now you can add challenges as well as submit flags!\nThis is what I added: {rollnum_nickname}")
+    await ctx.channel.send(f":partying_face: Congratulations {ctx.author.mention}, I added you to our database! And take a look at your new nickname!!\nBy the way, this is what I added: {rollnum_nickname}")
 
 
 
@@ -486,9 +502,11 @@ async def _agree(ctx, rollnum_nickname, description=" This is to ensure that the
 
 #check
 @bot.command(aliases=['check-in'])
-async def check(ctx, rollnum_nickname, description="This is to ensure that all the existing members of the server have been added to the database, which enables them participate in CTF challenges."):
+async def check(ctx, rollnum_nickname):
     """
     For existing members of the server. Type `-help check` for more info.
+
+    This is to ensure that all the existing members of the server have been added to the database, which enables them participate in CTF challenges.
     """
     # role_id = 749550229115895840 #'members' role
     # role = ctx.guild.get_role(role_id)
@@ -518,7 +536,7 @@ async def check(ctx, rollnum_nickname, description="This is to ensure that all t
 
     # await ctx.channel.send(f"Hey {ctx.author.mention}, you now have been given the role {role.mention}.")
     await ctx.message.add_reaction('✅')
-    await ctx.channel.send(f"Congratulations {ctx.author.mention}, you have been added to the database! Now you can add challenges as well as submit flags!\nThis is what I added: {rollnum_nickname}")
+    await ctx.channel.send(f":partying_face: Congratulations {ctx.author.mention}, I added you to our database!\nBy the way, this is what I added: {rollnum_nickname}")
 
 
 
@@ -596,7 +614,7 @@ async def on_command_error(ctx, error):
 
         # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
 
-        embed = discord.Embed(title="Someone encountered an error!", description=f"{ctx.author.name} (id: {ctx.author.id}) encountered the following error:", color=choice(bot.color_list), inline=False)
+        embed = discord.Embed(title="ALERT!!", description=f"{ctx.author.name} (id: {ctx.author.id}) encountered the following problem:", color=choice(bot.color_list), inline=False)
         embed.add_field(name="Command name:", value=f"{ctx.command}", inline=False)
         embed.add_field(name="Detail:", value=f"{error}")
 
@@ -610,7 +628,7 @@ async def on_command_error(ctx, error):
         channel = bot.get_channel(MOD_CHANNEL)
         # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
 
-        embed = discord.Embed(title="Someone encountered an error!", description=f"{ctx.author.name}(id: {ctx.author.id}) encountered the following error:", color=choice(bot.color_list), inline=False)
+        embed = discord.Embed(title="ALERT!!", description=f"{ctx.author.name}(id: {ctx.author.id}) encountered the following problem:", color=choice(bot.color_list), inline=False)
         embed.add_field(name="Command name:", value=f"{ctx.command}", inline=False)
         embed.add_field(name="Detail:", value=f"{error}")
 
