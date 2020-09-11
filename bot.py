@@ -156,10 +156,12 @@ async def _hi(ctx):
 #----------------------------------------------------------------------------
     
 #logout/#close
-@bot.command(aliases=['disconnect', 'close', 'stop'], hidden=True, description="Disconnect the bot")
+@bot.command(aliases=['disconnect', 'close', 'stop'], hidden=True)
 @commands.is_owner()
 async def logout(ctx):
     """
+    Disconnect the bot
+    
     If the user running the command owns the bot then this will disconnect the bot from discord. For development purpose only.
     """
     await ctx.send(f"Hey {ctx.author.mention}, I am now logging out :wave:")
@@ -185,10 +187,12 @@ async def echo(ctx, *, message=None):
 
 
 #add
-@bot.group(name='add', case_insensitive=True, invoke_without_command=True, description="Add a CTF challenge and its flag.")
+@bot.group(name='add', case_insensitive=True, invoke_without_command=True)
 async def _add(ctx):
     """
     Add challenge or flag.
+
+    Add a CTF challenge and its flag.
     """
     # if ctx.channel.id != ADD_CHALLENGES_CHANNEL:    #id of bot-test channel in CTF
     #     return
