@@ -36,8 +36,8 @@ logging.basicConfig(level=logging.INFO) #shows logging info on the console
 DB_URI = os.getenv('DATABASE_URL')
 bot.config_token = os.getenv('TOKEN')
 
-BOT_ERROR_LOG = os.getenv('BOT_ERROR_LOG')  # used to send exceptions/errors raised
-MOD_CHANNEL = os.getenv('MOD_CHANNEL')      # used in -execute command
+BOT_ERROR_LOG = int(os.getenv('BOT_ERROR_LOG'))  # used to send exceptions/errors raised
+MOD_CHANNEL = int(os.getenv('MOD_CHANNEL'))      # used in -execute command
 ADD_CHALLENGES_CHANNEL = os.getenv('ADD_CHALLENGES_CHANNEL')    # used in -add challenge command
 CHALLENGE_SOLVES_CHANNEL = os.getenv('CHALLENGE_SOLVES_CHANNEL')    # used to send updates about challenge solves
 CHALLENGES_CHANNEL = os.getenv('CHALLENGES_CHANNEL')    # used to publish challanges
@@ -139,7 +139,7 @@ async def on_member_join(member):
 @bot.command(name='hi', aliases=['hello'])      #works with 'hi' as well as 'hello'
 async def _hi(ctx):
     """
-    A simple command which says hi back to the author.
+    Make the bot say hi back to you.
     """
     await ctx.message.add_reaction('👋')
     # await ctx.message.add_reaction('😀')
@@ -212,7 +212,7 @@ async def add_challenge(ctx, category, *, description):
 
     Add a CTF challenge by sending the challenge in the given format.
     '''
-    if ctx.channel.id != ADD_CHALLENGES_CHANNEL:    #id of bot-test channel in CTF
+    if ctx.channel.id != ADD_CHALLENGES_CHANNEL:
         return
     try:
         conn = await asyncpg.connect(DB_URI)
@@ -508,7 +508,7 @@ async def check(ctx, rollnum_nickname):
     # role_id = 749550229115895840 #'members' role
     # role = ctx.guild.get_role(role_id)
     # await ctx.author.add_roles(role, reason="Added to db")
-    if ctx.channel.id != EXISTING_MEMBERS_CHANNEL: #new-arrivals channel
+    if ctx.channel.id != EXISTING_MEMBERS_CHANNEL: #existing-members channel
         return
 
     conn = await asyncpg.connect(DB_URI)
