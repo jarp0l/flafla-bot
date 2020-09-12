@@ -15,7 +15,6 @@ NPT = pytz.timezone('Asia/Kathmandu')
 #cwd = current working directory, to get the current directory to navigate through the files
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
-# print(f"{cwd}\n-----")
 
 description = '''Flafla - our own bot that helps us with our CTF challenges.
 
@@ -24,39 +23,26 @@ TIPS:
 
 * Many commands have aliases, delve deeper to find out!
 
---------------------------------------------
-
-NOTE: 
-* Commands under different categories:
-   -> Challenges: -add, -add challenge, -add flag, -publish
-   -> Moderation: -check-in, -agree
-   -> Extra: -hi, -echo
-
 ---------------------------------------------
 
 '''
 
 #Defining a few things
 secret_file = json.load(open(cwd+'/bot_config/secrets.json'))
-bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_ids=set(secret_file['OWNER_IDS']), description=description, dm_help=None, dm_help_threshold=500, sort_commands=False)
-# bot.config_token = secret_file['token']
+bot = commands.Bot(command_prefix='-', case_insensitive=True, owner_ids=set(secret_file['OWNER_IDS']), description=description, dm_help=None, dm_help_threshold=100, sort_commands=False)
 logging.basicConfig(level=logging.INFO) #shows logging info on the console
 
-# DB_URI = secret_file['1']   #1 means active, 0 means inactive; go to secrets.json to change the mode
-
-#from Heroku config vars:
+#from config vars set in Heroku:
 DB_URI = os.getenv('DATABASE_URL')
 bot.config_token = os.getenv('TOKEN')
 
+BOT_ERROR_LOG = os.getenv('BOT_ERROR_LOG')
+ADD_CHALLENGES_CHANNEL = os.getenv('ADD_CHALLENGES_CHANNEL')
+CHALLENGE_SOLVES_CHANNEL = os.getenv('CHALLENGE_SOLVES_CHANNEL')
+CHALLENGES_CHANNEL = os.getenv('CHALLENGES_CHANNEL')
+NEW_MEMBERS_CHANNEL = os.getenv('NEW_MEMBERS_CHANNEL')
+EXISTING_MEMBERS_CHANNEL = os.getenv('EXISTING_MEMBERS_CHANNEL')
 
-
-#some other constants used throughout the code:
-MOD_CHANNEL = secret_file['MOD_CHANNEL']
-ADD_CHALLENGES_CHANNEL = secret_file['ADD_CHALLENGES_CHANNEL']
-CHALLENGE_SOLVES_CHANNEL = secret_file['CHALLENGE_SOLVES_CHANNEL']
-CHALLENGES_CHANNEL = secret_file['CHALLENGES_CHANNEL']
-NEW_MEMBERS_CHANNEL = secret_file['NEW_MEMBERS_CHANNEL']
-EXISTING_MEMBERS_CHANNEL = secret_file['EXISTING_MEMBERS_CHANNEL']
 
 bot.colors = {
   'WHITE': 0xFFFFFF,
@@ -94,7 +80,7 @@ colors = {
 }
 '''
 
-#flag_encryption_code
+#flag encryption function
 import hashlib
 #begin---
 def encrypt(flag):
@@ -108,7 +94,7 @@ def encrypt(flag):
 #on_ready
 @bot.event
 async def on_ready():
-    print(f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nMy current prefix is: -\n-----")
+    print(f"-----\nLogged in as: {bot.user.name} : {bot.user.id}\n-----\nCurrent prefix: -\n-----")
 
     await bot.change_presence(activity=discord.Game(name=f"Hi, I am {bot.user.name}.\nUse prefix `-` to interact with me. For example: `-help`.")) # This changes the bot's 'activity' that is see on profile pop-up
     channel = bot.get_channel(751451619756867727)
@@ -158,6 +144,16 @@ async def _hi(ctx):
     # await ctx.message.add_reaction('😀')
     await ctx.send(f"Hi {ctx.author.mention}!")
 
+#----------------------------------------------------------------------------
+
+#ping
+@bot.command(aliases=['latency'])
+@commands.guild_only()
+async def ping(ctx):
+    """
+    Check for latency.
+    """
+    await ctx.send(f'Pong! It took me `{round(bot.latency * 1000)}` ms.')
 
 #----------------------------------------------------------------------------
     
@@ -181,7 +177,7 @@ async def logout(ctx):
 @bot.command()
 async def echo(ctx, *, message=None):
     """
-    A simple command that repeats the author's input back to them.
+    Repeats the author's message back to them.
     """
     message = message or "Please provide the message to be repeated."
     
@@ -307,7 +303,7 @@ async def add_flag(ctx, challenge_id, flag):
 
     # except Exception as e:
     #     # await ctx.channel.send("Please follow the correct syntax.")
-    #     channel = bot.get_channel(MOD_CHANNEL)
+    #     channel = bot.get_channel(BOT_ERROR_LOG)
     #     await channel.send(f"error on command `-add flag`: {e}")
 
 
@@ -550,7 +546,7 @@ async def execute(ctx, *, query):
     """
     Execute the query. Only for debugging purpose.
     """
-    if ctx.channel.id != MOD_CHANNEL:
+    if ctx.channel.id != BOT_ERROR_LOG:
         return
 
     conn = await asyncpg.connect(DB_URI)
@@ -559,7 +555,7 @@ async def execute(ctx, *, query):
 
     await conn.close()
 
-    channel = bot.get_channel(MOD_CHANNEL)
+    channel = bot.get_channel(BOT_ERROR_LOG)
     await channel.send(f"{result}")
 
 
@@ -598,7 +594,7 @@ async def on_command_error(ctx, error):
         await ctx.send("Hey! You lack permission to use that command!")
     
     elif isinstance(error, commands.CommandOnCooldown):
-        # If the command is currently on cooldown trip this
+        # If the command is currently on cooldown, trip this
         m, s = divmod(error.retry_after, 60)
         h, m = divmod(m, 60)
         if int(h) == 0 and int(m) == 0:
@@ -610,12 +606,12 @@ async def on_command_error(ctx, error):
    
     elif isinstance(error, commands.CommandInvokeError):
         await ctx.send("Something does not seem right. Type `-help` if you need any help.")
-        channel = bot.get_channel(MOD_CHANNEL) #to send the below message to this channel
+        channel = bot.get_channel(BOT_ERROR_LOG) #to send the below message to this channel
 
         # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
 
-        embed = discord.Embed(title="ALERT!!", description=f"{ctx.author.name} (id: {ctx.author.id}) encountered the following problem:", color=choice(bot.color_list), inline=False)
-        embed.add_field(name="Command name:", value=f"{ctx.command}", inline=False)
+        embed = discord.Embed(title="Exception raised", description=f"{ctx.author.name} (id: {ctx.author.id}) encountered the following exception:", color=choice(bot.color_list), inline=False)
+        embed.add_field(name="Command:", value=f"{ctx.command}", inline=False)
         embed.add_field(name="Detail:", value=f"{error}")
 
         await channel.send(embed=embed)
@@ -625,11 +621,11 @@ async def on_command_error(ctx, error):
         # print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         # traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
-        channel = bot.get_channel(MOD_CHANNEL)
+        channel = bot.get_channel(BOT_ERROR_LOG)
         # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
 
-        embed = discord.Embed(title="ALERT!!", description=f"{ctx.author.name}(id: {ctx.author.id}) encountered the following problem:", color=choice(bot.color_list), inline=False)
-        embed.add_field(name="Command name:", value=f"{ctx.command}", inline=False)
+        embed = discord.Embed(title="Exception raised", description=f"{ctx.author.name}(id: {ctx.author.id}) encountered the following exception:", color=choice(bot.color_list), inline=False)
+        embed.add_field(name="Command:", value=f"{ctx.command}", inline=False)
         embed.add_field(name="Detail:", value=f"{error}")
 
         await channel.send(embed=embed)
