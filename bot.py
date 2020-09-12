@@ -38,11 +38,11 @@ bot.config_token = os.getenv('TOKEN')
 
 BOT_ERROR_LOG = int(os.getenv('BOT_ERROR_LOG'))  # used to send exceptions/errors raised
 MOD_CHANNEL = int(os.getenv('MOD_CHANNEL'))      # used in -execute command
-ADD_CHALLENGES_CHANNEL = os.getenv('ADD_CHALLENGES_CHANNEL')    # used in -add challenge command
-CHALLENGE_SOLVES_CHANNEL = os.getenv('CHALLENGE_SOLVES_CHANNEL')    # used to send updates about challenge solves
-CHALLENGES_CHANNEL = os.getenv('CHALLENGES_CHANNEL')    # used to publish challanges
-NEW_MEMBERS_CHANNEL = os.getenv('NEW_MEMBERS_CHANNEL')
-EXISTING_MEMBERS_CHANNEL = os.getenv('EXISTING_MEMBERS_CHANNEL')
+ADD_CHALLENGES_CHANNEL = int(os.getenv('ADD_CHALLENGES_CHANNEL'))    # used in -add challenge command
+CHALLENGE_SOLVES_CHANNEL = int(os.getenv('CHALLENGE_SOLVES_CHANNEL'))    # used to send updates about challenge solves
+CHALLENGES_CHANNEL = int(os.getenv('CHALLENGES_CHANNEL'))    # used to publish challanges
+NEW_MEMBERS_CHANNEL = int(os.getenv('NEW_MEMBERS_CHANNEL'))
+EXISTING_MEMBERS_CHANNEL = int(os.getenv('EXISTING_MEMBERS_CHANNEL'))
 
 
 bot.colors = {
