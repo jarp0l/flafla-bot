@@ -36,10 +36,11 @@ logging.basicConfig(level=logging.INFO) #shows logging info on the console
 DB_URI = os.getenv('DATABASE_URL')
 bot.config_token = os.getenv('TOKEN')
 
-BOT_ERROR_LOG = os.getenv('BOT_ERROR_LOG')
-ADD_CHALLENGES_CHANNEL = os.getenv('ADD_CHALLENGES_CHANNEL')
-CHALLENGE_SOLVES_CHANNEL = os.getenv('CHALLENGE_SOLVES_CHANNEL')
-CHALLENGES_CHANNEL = os.getenv('CHALLENGES_CHANNEL')
+BOT_ERROR_LOG = os.getenv('BOT_ERROR_LOG')  # used to send exceptions/errors raised
+MOD_CHANNEL = os.getenv('MOD_CHANNEL')      # used in -execute command
+ADD_CHALLENGES_CHANNEL = os.getenv('ADD_CHALLENGES_CHANNEL')    # used in -add challenge command
+CHALLENGE_SOLVES_CHANNEL = os.getenv('CHALLENGE_SOLVES_CHANNEL')    # used to send updates about challenge solves
+CHALLENGES_CHANNEL = os.getenv('CHALLENGES_CHANNEL')    # used to publish challanges
 NEW_MEMBERS_CHANNEL = os.getenv('NEW_MEMBERS_CHANNEL')
 EXISTING_MEMBERS_CHANNEL = os.getenv('EXISTING_MEMBERS_CHANNEL')
 
@@ -546,7 +547,7 @@ async def execute(ctx, *, query):
     """
     Execute the query. Only for debugging purpose.
     """
-    if ctx.channel.id != BOT_ERROR_LOG:
+    if ctx.channel.id != MOD_CHANNEL:
         return
 
     conn = await asyncpg.connect(DB_URI)
@@ -555,8 +556,7 @@ async def execute(ctx, *, query):
 
     await conn.close()
 
-    channel = bot.get_channel(BOT_ERROR_LOG)
-    await channel.send(f"{result}")
+    await ctx.send(f"{result}")
 
 
 
