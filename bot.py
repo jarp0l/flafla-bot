@@ -316,7 +316,7 @@ async def add_flag(ctx, challenge_id, flag):
 #submit
 @bot.command(name='flag', aliases=['submit', 'submit-flag'], invoke_without_command=True)
 @commands.dm_only()
-@commands.cooldown(rate=1, per=15, type=commands.BucketType.user)
+@commands.cooldown(rate=1, per=10, type=commands.BucketType.user)
 async def submit_flag(ctx, challenge_id, flag):
     '''
     Submit the captured flag!
@@ -341,6 +341,17 @@ async def submit_flag(ctx, challenge_id, flag):
         await ctx.channel.send("There is no challenge with that id.")
 
     elif str(data) == encrypted_flag:  #place here hashing/encryption
+
+        check_solver = await conn.fetchval('''
+                        SELECT member_id 
+                            FROM solvers
+                                WHERE member_id = $1
+                        ''',
+                            ctx.author.id
+                            )
+
+        if check_solver is not None:
+            await ctx.channel.send("You're already submitted the flag. :) ")
 
         async with conn.transaction():
             await conn.execute('''
@@ -606,7 +617,7 @@ async def on_command_error(ctx, error):
         return
 
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(f"One or more argument is missing. Please check and try again. Or type `-help {ctx.command}` for help.")
+        await ctx.send(f"You're missing the `{error.param.name}` argument(s), which is(are) required for this command to work properly.")
     
     elif isinstance(error, commands.PrivateMessageOnly):
             await ctx.message.delete()
@@ -614,7 +625,7 @@ async def on_command_error(ctx, error):
 
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("Hey! You lack permission to use that command!")
-    
+
     elif isinstance(error, commands.CommandOnCooldown):
         # If the command is currently on cooldown, trip this
         m, s = divmod(error.retry_after, 60)
