@@ -352,7 +352,7 @@ async def submit_flag(ctx, challenge_id, flag):
                             )
 
         if check_solver is not None:
-            await ctx.channel.send("You've already submitted the flag. :) ")
+            return await ctx.channel.send("You've already submitted the flag. :) ")
 
         async with conn.transaction():
             await conn.execute('''
