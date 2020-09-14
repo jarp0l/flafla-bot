@@ -484,7 +484,7 @@ async def _agree(ctx, rollnum_nickname):
         await ctx.channel.send("You're already in. :) ")
 
     async with conn.transaction():
-        await conn.execute('''await ctx.author.edit(nick=rollnum_nickname)
+        await conn.execute('''
             INSERT INTO members (
                 member_id,
                 server_nickname,
