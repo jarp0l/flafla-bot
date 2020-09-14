@@ -493,7 +493,7 @@ async def _agree(ctx, rollnum_nickname):
                             )
 
     if check_member is not None:
-        await ctx.channel.send("You're already in. :) ")
+        return await ctx.channel.send("You're already in. :) ")
 
     async with conn.transaction():
         await conn.execute('''
@@ -545,7 +545,7 @@ async def check(ctx, rollnum_nickname):
                             )
 
     if check_member is not None:
-        await ctx.channel.send("You're already in. :) ")
+        return await ctx.channel.send("You're already in. :) ")
 
     async with conn.transaction():
         await conn.execute('''
@@ -618,7 +618,7 @@ async def on_command_error(ctx, error):
         return
 
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(f"You're missing the `{error.param.name}` argument(s), which is(are) required for this command to work properly.")
+        await ctx.send(f"You're missing one or more arguments. Type `-help command` if you need help.")
     
     elif isinstance(error, commands.PrivateMessageOnly):
             await ctx.message.delete()
