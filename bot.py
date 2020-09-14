@@ -316,7 +316,7 @@ async def add_flag(ctx, challenge_id, flag):
 #submit
 @bot.command(name='flag', aliases=['submit', 'submit-flag'], invoke_without_command=True)
 @commands.dm_only()
-@commands.cooldown(rate=1, per=60, type=commands.BucketType.user)
+@commands.cooldown(rate=1, per=15, type=commands.BucketType.user)
 async def submit_flag(ctx, challenge_id, flag):
     '''
     Submit the captured flag!
