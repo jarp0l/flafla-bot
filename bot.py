@@ -469,12 +469,22 @@ async def _agree(ctx, rollnum_nickname):
     # role_id = secret_file['MEMBER_ROLE_ID'] #'members' role
     # role = ctx.guild.get_role(role_id)
     # await ctx.author.add_roles(role, reason="Agreed to the rules")
-    await ctx.author.edit(nick=rollnum_nickname)
     
     conn = await asyncpg.connect(DB_URI)
     
+    check_member = await conn.fetchval('''
+                        SELECT member_id 
+                            FROM members
+                                WHERE member_id = $1
+                        ''',
+                            ctx.author.id
+                            )
+
+    if check_member is not None:
+        await ctx.channel.send("You're already in. :) ")
+
     async with conn.transaction():
-        await conn.execute('''
+        await conn.execute('''await ctx.author.edit(nick=rollnum_nickname)
             INSERT INTO members (
                 member_id,
                 server_nickname,
@@ -491,6 +501,7 @@ async def _agree(ctx, rollnum_nickname):
     await conn.close()
     # await ctx.channel.send(f"Hey {ctx.author.mention}, you now have been given the role {role.mention}, and take a look at your nickname, it has been changed to __**{rollnum_nickname}**__ in this server!")
     await ctx.message.add_reaction('✅')
+    await ctx.author.edit(nick=rollnum_nickname)
     await ctx.channel.send(f":partying_face: Congratulations {ctx.author.mention}, I added you to our database! And take a look at your new nickname!!\nBy the way, this is what I added: {rollnum_nickname}")
 
 
@@ -513,6 +524,17 @@ async def check(ctx, rollnum_nickname):
 
     conn = await asyncpg.connect(DB_URI)
     
+    check_member = await conn.fetchval('''
+                        SELECT member_id 
+                            FROM members
+                                WHERE member_id = $1
+                        ''',
+                            ctx.author.id
+                            )
+
+    if check_member is not None:
+        await ctx.channel.send("You're already in. :) ")
+
     async with conn.transaction():
         await conn.execute('''
             INSERT INTO members (
@@ -604,17 +626,17 @@ async def on_command_error(ctx, error):
         else:
             await ctx.send(f' You must wait {int(h)} hours, {int(m)} minutes and {int(s)} seconds to use this command!')
    
-    elif isinstance(error, commands.CommandInvokeError):
-        await ctx.send("Something does not seem right. Type `-help` if you need any help.")
-        channel = bot.get_channel(BOT_ERROR_LOG) #to send the below message to this channel
+    # elif isinstance(error, commands.CommandInvokeError):
+    #     await ctx.send("Something does not seem right. Type `-help` if you need any help.")
+    #     channel = bot.get_channel(BOT_ERROR_LOG) #to send the below message to this channel
 
-        # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
+    #     # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
 
-        embed = discord.Embed(title="Exception raised", description=f"{ctx.author.name} (id: {ctx.author.id}) encountered the following exception:", color=choice(bot.color_list), inline=False)
-        embed.add_field(name="Command:", value=f"{ctx.command}", inline=False)
-        embed.add_field(name="Detail:", value=f"{error}")
+    #     embed = discord.Embed(title="Exception raised", description=f"{ctx.author.name} (id: {ctx.author.id}) encountered the following exception:", color=choice(bot.color_list), inline=False)
+    #     embed.add_field(name="Command:", value=f"{ctx.command}", inline=False)
+    #     embed.add_field(name="Detail:", value=f"{error}")
 
-        await channel.send(embed=embed)
+    #     await channel.send(embed=embed)
 
     else:
         # All other Errors not returned come here. And we can just print the default TraceBack.
@@ -623,8 +645,8 @@ async def on_command_error(ctx, error):
 
         channel = bot.get_channel(BOT_ERROR_LOG)
         # await channel.send(f"Error encountered by: {ctx.author.name}, {ctx.author.id}\nError encountered in: {ctx.command}\n{error}")
-
-        embed = discord.Embed(title="Exception raised", description=f"{ctx.author.name}(id: {ctx.author.id}) encountered the following exception:", color=choice(bot.color_list), inline=False)
+        
+        embed = discord.Embed(title="Exception raised", description=f"<@{ctx.author.id}> encountered the following exception:", color=choice(bot.color_list), inline=False)
         embed.add_field(name="Command:", value=f"{ctx.command}", inline=False)
         embed.add_field(name="Detail:", value=f"{error}")
 
