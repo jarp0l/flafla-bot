@@ -345,13 +345,14 @@ async def submit_flag(ctx, challenge_id, flag):
         check_solver = await conn.fetchval('''
                         SELECT member_id 
                             FROM solvers
-                                WHERE member_id = $1
+                                WHERE member_id = $1 AND challenge_id = $2
                         ''',
-                            ctx.author.id
+                            ctx.author.id,
+                            challenge_id
                             )
 
         if check_solver is not None:
-            await ctx.channel.send("You're already submitted the flag. :) ")
+            await ctx.channel.send("You've already submitted the flag. :) ")
 
         async with conn.transaction():
             await conn.execute('''
