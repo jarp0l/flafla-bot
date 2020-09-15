@@ -112,7 +112,8 @@ async def on_member_join(member):
      \\***#rules: ** *rules you **must** follow everywhere on this server*
      \\*and all the other channels actually :smile:
 
-    Please remember that you will not be able to add challenges and submit flags for our CTF challenges until you send a message with your 'rollnumber and nickname' to our bot 'Flafla'. 
+    
+    To have yourself added to our database and also to get your nickname changed, just send your `rollnumber` and `nickname` to our bot `Flafla`.
     This is the format you should follow: `-accept <rollnum_nickname>`. 
     For example: 
     `-accept 076BEI049_nickname` 
@@ -297,9 +298,11 @@ async def add_flag(ctx, challenge_id, flag):
         await ctx.channel.send(f"Congrats! Your flag has been added!")
 
     elif data is None:
+        await conn.close()
         await ctx.channel.send("There is no challenge with that id.")
 
     else:
+        await conn.close()
         await ctx.channel.send("Don't try to add flag to someone else's challenge!")
 
     # except Exception as e:
@@ -338,7 +341,8 @@ async def submit_flag(ctx, challenge_id, flag):
     encrypted_flag = encrypt(flag)
 
     if data is None:
-        await ctx.channel.send("There is no challenge with that id.")
+        await conn.close()
+        return await ctx.channel.send("There is no challenge with that id.")
 
     elif str(data) == encrypted_flag:  #place here hashing/encryption
 
@@ -352,6 +356,7 @@ async def submit_flag(ctx, challenge_id, flag):
                             )
 
         if check_solver is not None:
+            await conn.close()
             return await ctx.channel.send("You've already submitted the flag. :) ")
 
         async with conn.transaction():
@@ -493,6 +498,7 @@ async def _agree(ctx, rollnum_nickname):
                             )
 
     if check_member is not None:
+        await conn.close()
         return await ctx.channel.send("You're already in. :) ")
 
     async with conn.transaction():
@@ -545,6 +551,7 @@ async def check(ctx, rollnum_nickname):
                             )
 
     if check_member is not None:
+        await conn.close()
         return await ctx.channel.send("You're already in. :) ")
 
     async with conn.transaction():
@@ -591,7 +598,6 @@ async def execute(ctx, *, query):
     await conn.close()
 
     await ctx.send(f"{result}")
-
 
 
 #----------------------------------------------------------------------------

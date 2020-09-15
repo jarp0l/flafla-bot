@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS flags (
 
 
 CREATE TABLE IF NOT EXISTS solvers (
-    challenge_id INT PRIMARY KEY REFERENCES flags(challenge_id),
+    challenge_id INT REFERENCES flags(challenge_id),
     member_id BIGINT REFERENCES members(member_id),
     solved_on TIMESTAMP,
     message_id_on_success BIGINT
