@@ -102,6 +102,7 @@ async def on_ready():
     await channel.send("Hey all, I'm back online! :smiley:")
 
 #on_member_join
+#welcome
 @bot.event 
 async def on_member_join(member):
 
@@ -113,7 +114,7 @@ async def on_member_join(member):
      \\*and all the other channels actually :smile:
 
     
-    To have yourself added to our database and also to get your nickname changed, just send your `rollnumber` and `nickname` to our bot `Flafla`.
+    To get yourself added to our database and also to get your nickname changed, just send your `rollnumber` and `nickname` to our bot `Flafla`.
     This is the format you should follow: `-accept <rollnum_nickname>`. 
     For example: 
     `-accept 076BEI049_nickname` 
